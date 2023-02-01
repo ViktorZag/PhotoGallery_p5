@@ -5,7 +5,6 @@ import retrofit2.Retrofit
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import retrofit2.create
 
-// a271fba6aab628f0c586b214ba3e625a
 
 class PhotoRepository {
 

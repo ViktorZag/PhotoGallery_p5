@@ -7,14 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.GridLayoutManager
-import com.viktor_zet.photogallery_p5.api.FlickrApi
 import com.viktor_zet.photogallery_p5.databinding.FragmentPhotoGalleryBinding
 import com.viktor_zet.photogallery_p5.repository.PhotoRepository
 import kotlinx.coroutines.launch
-import retrofit2.Retrofit
-import retrofit2.converter.scalars.ScalarsConverterFactory
-import retrofit2.create
 
 private const val TAG = "PhotoGalleryFragment"
 
@@ -42,7 +37,7 @@ class PhotoGalleryFragment : Fragment() {
 
 
         viewLifecycleOwner.lifecycleScope.launch {
-            val response = PhotoRepository().fetchContents()
+            val response = PhotoRepository().fetchPhotos()
             Log.d(TAG, "Response: $response")
         }
     }

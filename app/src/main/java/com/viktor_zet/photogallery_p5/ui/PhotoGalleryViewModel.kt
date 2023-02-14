@@ -23,11 +23,21 @@ class PhotoGalleryViewModel : ViewModel() {
     init {
         viewModelScope.launch {
             try {
-                val items = photoRepository.searchPhotos("ukraine")
+                val items = fetchGalleryItems("")
                 _galleryItems.value = items
             } catch (ex: Exception) {
                 Log.e(TAG, "Failed to fetch gallery items", ex)
             }
         }
+    }
+
+    fun setQuery(query: String) {
+        viewModelScope.launch {_galleryItems.value = fetchGalleryItems(query) }
+    }
+
+    private suspend fun fetchGalleryItems(query: String): List<GalleryItem> {
+        return if (query.isNotEmpty()) {
+            photoRepository.searchPhotos(query)
+        } else photoRepository.fetchPhotos()
     }
 }

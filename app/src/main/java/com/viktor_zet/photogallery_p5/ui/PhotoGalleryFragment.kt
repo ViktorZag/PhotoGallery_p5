@@ -25,6 +25,7 @@ class PhotoGalleryFragment : Fragment() {
             "Cannot access binding because it is null. Is the view visible?"
         }
     private val photoGalleryViewModel: PhotoGalleryViewModel by viewModels()
+    private var searchView: SearchView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,8 +46,9 @@ class PhotoGalleryFragment : Fragment() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
-                photoGalleryViewModel.galleryItems.collect { items ->
-                    binding.photoGrid.adapter = PhotoListAdapter(items)
+                photoGalleryViewModel.uiState.collect { state ->
+                    binding.photoGrid.adapter = PhotoListAdapter(state.images)
+                    searchView?.setQuery(state.query, false)
                 }
             }
         }
@@ -58,13 +60,13 @@ class PhotoGalleryFragment : Fragment() {
         inflater.inflate(R.menu.fragment_photo_gallery, menu)
 
         val searchItem: MenuItem = menu.findItem(R.id.menu_item_search)
-        val searchView = searchItem.actionView as? SearchView
+        searchView = searchItem.actionView as? SearchView
 
         searchView?.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 Log.d(TAG, "QueryTextSubmit: $query")
                 photoGalleryViewModel.setQuery(query ?: "")
-                searchView.clearFocus()
+                searchView?.clearFocus()
                 return true
             }
 
@@ -74,6 +76,21 @@ class PhotoGalleryFragment : Fragment() {
             }
 
         })
+    }
+
+    override fun onDestroyOptionsMenu() {
+        super.onDestroyOptionsMenu()
+        searchView = null
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.menu_item_clear -> {
+                photoGalleryViewModel.setQuery("")
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
 
